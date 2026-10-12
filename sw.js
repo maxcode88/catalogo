@@ -4,6 +4,6 @@ self.addEventListener('install',function(){self.skipWaiting();});
 self.addEventListener('activate',function(e){e.waitUntil(self.clients.claim());});
 self.addEventListener('fetch',function(e){var u=new URL(e.request.url);
   if(e.request.method!=='GET'||u.origin!==location.origin)return;
-  var q=e.request.mode==='navigate'?new Request(e.request,{cache:'no-cache'}):e.request;
-  e.respondWith(fetch(q).then(function(r){var c=r.clone();caches.open(C).then(function(x){x.put(e.request,c);});return r;})
+  var f=e.request.mode==='navigate'?fetch(e.request.url,{cache:'no-cache',credentials:'same-origin'}):fetch(e.request);
+  e.respondWith(f.then(function(r){var c=r.clone();caches.open(C).then(function(x){x.put(e.request,c);});return r;})
     .catch(function(){return caches.match(e.request,{ignoreSearch:true});}));});
