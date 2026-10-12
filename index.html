@@ -807,6 +807,13 @@ html body button[data-ok]{background:#FDECEA!important;border:2px solid #B3261E!
 html body button.vaciar[data-ok],html body #pCancel[data-ok]{border-radius:12px;padding:10px 16px}
 @keyframes prdpulso{0%,100%{box-shadow:0 0 0 0 rgba(179,38,30,.35)}50%{box-shadow:0 0 0 6px rgba(179,38,30,0)}}
 @media (prefers-reduced-motion:reduce){html body button[data-ok]{animation:none}}
+html body .cmod .colq{margin-top:4px}
+html body .cmod ul.qlist{list-style:none;margin:2px 0 0 18px;padding:0;max-width:150px}
+html body .cmod ul.qlist li{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:1.5;border-bottom:1px dashed #EDEDED}
+html body .cmod ul.qlist li:last-child{border-bottom:0}
+html body .sz2 .step{gap:4px!important}
+html body .sz2 .step button{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;font-size:18px!important;line-height:1!important;padding:0!important}
+html body .sz2 .step .sn{min-width:20px;font-size:18px!important}
 </style>
 </head>
 <body>
@@ -848,7 +855,7 @@ html body button.vaciar[data-ok],html body #pCancel[data-ok]{border-radius:12px;
   <footer class="prd-pie"><div class="pl">PRD</div>
       <div class="lc">PRD NAZCA 345</div><p>Av. Nazca 345, Local 1 · Galería Lemans</p>
       <div class="lc">PRD NAZCA 322</div><p>Av. Nazca 322, Local 1 · Galería El Malecón</p>
-      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2s · web</p></footer>
+      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2t · web</p></footer>
   </section>
 
   <section id="vCheck" class="view" hidden>
@@ -1301,10 +1308,10 @@ function byCat(){ const out=[]; for(const m of MODELS){ if(!modelUnits(m)) conti
 function compactHTML(){
   const ms=MODELS.filter(m=>modelUnits(m)); if(!ms.length) return '<p class="small" style="margin:0">Todavía no elegiste prendas.</p>';
   return ms.map(m=>{ const cols=Object.keys(cart[m.n]).filter(col=>lineUnits(m,col)); const u=modelUnits(m);
-    const lines=cols.map(col=>{ const l=cart[m.n][col], su=m.talles.filter(t=>l.sueltos[t]), parts=[];
-      if(l.curvas) parts.push(l.curvas+' curva'+(l.curvas>1?'s':''));
-      if(su.length) parts.push(su.map(t=>t+(l.sueltos[t]>1?' ×'+l.sueltos[t]:'')).join(', '));
-      return `<span class="cl"><span class="dot" style="background:${SW[col]}"></span><span><b>${esc(colorLbl(m,col))}:</b> ${parts.join(' + ')}</span></span>`; }).join('');
+    const lines=cols.map(col=>{ const l=cart[m.n][col], su=m.talles.filter(t=>l.sueltos[t]), rows=[];
+      if(l.curvas) rows.push(`<li><span>Curva</span><b>×${l.curvas}</b></li>`);
+      su.forEach(t=>rows.push(`<li><span>${esc(t)}</span><b>×${l.sueltos[t]}</b></li>`));
+      return `<div class="colq"><div class="cl"><span class="dot" style="background:${SW[col]}"></span><b>${esc(colorLbl(m,col))}</b></div><ul class="qlist">${rows.join('')}</ul></div>`; }).join('');
     return `<div class="cmod"><div class="mhead">${thumb(m,cols[0],true)}<div class="t"><b>${m.n} ${esc(m.name)}</b>${lines}<small>${u} prenda${u===1?'':'s'}</small></div><span class="m">${fmt(modelTotal(m))}</span></div>
       <div class="cbtns"><button type="button" class="cbtn" data-editm="${m.n}" aria-label="Modificar ${m.n} ${esc(m.name)}">Modificar</button><button type="button" class="cbtn quitar" data-quitar="${m.n}" aria-label="Eliminar ${m.n} ${esc(m.name)} del pedido">Eliminar</button></div></div>`; }).join('');
 }
@@ -1434,7 +1441,7 @@ function renderBar(){
   const ready = ok && me && envSel && facSel && decl>0;
   let puede = true;
   if(v==='vCheck'){
-    if(chkPaso===1){ puede=ok; if(!ok){ s=`Te faltan ${fmt(MINx-t)} para el mínimo`; L=`Te faltan ${fmt(MINx-t)} para llegar al mínimo de ${fmt(MINx)}. Tocá “Seguir eligiendo” y sumá más prendas.`; } }
+    if(chkPaso===1){ puede=ok; if(!ok){ s=`Te faltan ${fmt(MINx-t)} para el mínimo`; L=`Te faltan ${fmt(MINx-t)} para llegar al mínimo de ${fmt(MINx)}. Tocá ${chkDetAb?'“+ Agregar más prendas”':'“Seguir eligiendo”'} y sumá más prendas.`; } }
     else if(chkPaso===2){ puede=!!me; if(!me){ s='Faltan tus datos'; L='Falta: buscate con tu DNI o celular, o tocá “Es mi primera compra” para cargar tus datos.'; } }
     else if(chkPaso===3){ puede=!!envSel; s=envSel?'Envío elegido':'Falta elegir el envío'; if(!envSel) L=(me&&me.envios&&me.envios.length)?'Falta elegir cómo te lo mandamos. Tocá una de las opciones de arriba.':'Falta cargar cómo te lo mandamos. Tocá “+ Cargar cómo te lo mandamos”.'; }
     else if(chkPaso===4){ puede=!!facSel; s=facSel?'Ticket elegido':'Falta elegir el ticket'; if(!facSel) L=(me&&me.facturas&&me.facturas.length)?'Falta elegir a nombre de quién va el ticket. Tocá una de las opciones de arriba.':'Falta cargar a nombre de quién va el ticket. Tocá “+ Cargar a nombre de quién va el ticket”.'; }
