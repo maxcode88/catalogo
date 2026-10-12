@@ -780,6 +780,17 @@ header.top .who b{display:inline;margin-left:4px;color:#000}
 html body .info h3.icamb{font-size:16px;font-weight:700;margin:18px 0 6px;color:#111}
 html body #chips{position:sticky;top:0;z-index:6;background:#fff;margin:0 -16px 12px;padding:10px 16px;box-shadow:0 1px 0 #CFCFCF}
 html body button.vaciar{display:block;margin:14px auto 0;background:none;border:0;color:#4A4A4A;text-decoration:underline;font-family:var(--body);font-size:15px;min-height:44px;padding:10px 16px}
+html body #chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;overflow:visible}
+html body #chips .chip{font-size:13px;padding:6px 4px;min-height:40px;justify-content:center;text-align:center;white-space:nowrap}
+html body .cmod{padding:14px 0;border-top:1px solid #CFCFCF}
+html body .cmod:first-child{border-top:0;padding-top:4px}
+html body .cmod .t{display:flex;flex-direction:column;gap:3px}
+html body .cmod .cl{display:flex;align-items:center;gap:6px;font-size:14px;color:#000}
+html body .cmod .cl .dot{flex:none;width:12px;height:12px;border-radius:50%;border:1px solid #CFCFCF}
+html body .cmod small{color:#4A4A4A;font-size:13px}
+html body .cbtns{display:flex;gap:8px;margin-top:10px}
+html body button.cbtn{flex:1;min-height:44px;border-radius:12px;background:#fff;border:2px solid #000;color:#000;font-family:var(--titles);text-transform:uppercase;letter-spacing:.06em;font-weight:600;font-size:15px}
+html body button.cbtn.quitar{border-color:#CFCFCF;color:#4A4A4A}
 </style>
 </head>
 <body>
@@ -821,7 +832,7 @@ html body button.vaciar{display:block;margin:14px auto 0;background:none;border:
   <footer class="prd-pie"><div class="pl">PRD</div>
       <div class="lc">PRD NAZCA 345</div><p>Av. Nazca 345, Local 1 · Galería Lemans</p>
       <div class="lc">PRD NAZCA 322</div><p>Av. Nazca 322, Local 1 · Galería El Malecón</p>
-      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2o · web</p></footer>
+      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2p · web</p></footer>
   </section>
 
   <section id="vCheck" class="view" hidden>
@@ -999,7 +1010,7 @@ function thumb(m,col,small,idx){
 
 /* ===== catálogo ===== */
 let cat='Todo';
-let CATS=[]; function renderChips(){ const cats=['Todo',...(CATS.length?CATS:new Set(MODELS.map(m=>m.cat)))]; $('chips').innerHTML=cats.map(c=>{ const n=c==='Todo'?MODELS.length:MODELS.filter(m=>m.cat===c).length; return `<button class="chip" aria-pressed="${c===cat}" data-cat="${esc(c)}">${esc(c)} <span class="cn">${n}</span></button>`; }).join(''); }
+let CATS=[]; function renderChips(){ const cats=['Todo',...(CATS.length?CATS:new Set(MODELS.map(m=>m.cat)))]; $('chips').innerHTML=cats.map(c=>{ const n=c==='Todo'?MODELS.length:MODELS.filter(m=>m.cat===c).length; return `<button class="chip" aria-pressed="${c===cat}" data-cat="${esc(c)}" aria-label="${esc(c)}, ${n} modelos">${esc(c==='Todo'?'Todo':c.split(' ')[0])}</button>`; }).join(''); }
 function renderGrid(){
   $('sucName').innerHTML = suc ? `${esc(SUCS[suc].nombre)} <small style="font-weight:500;color:var(--muted)">${esc(SUCS[suc].sub||'')}</small>` : '';
   $('addBanner').innerHTML = addTo ? `<div class="addmode"><span>Agregando prendas al pedido <b>${esc(addTo.pedido)}</b></span><button type="button" id="addCancel">Cancelar</button></div>` : '';
@@ -1263,7 +1274,18 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('scrim').hidden
 function pillsFor(m,col){ const l=cart[m.n][col]; const out=[]; if(l.curvas) out.push(`<span class="pill cv">${l.curvas} curva${l.curvas>1?'s':''}</span>`);
   m.talles.forEach(t=>{ if(l.sueltos[t]) out.push(`<span class="pill">${t} ×${l.sueltos[t]}</span>`); }); return out.join(''); }
 function byCat(){ const out=[]; for(const m of MODELS){ if(!modelUnits(m)) continue; let g=out.find(x=>x.cat===m.cat); if(!g){ g={cat:m.cat,ms:[]}; out.push(g);} g.ms.push(m);} return out; }
+function compactHTML(){
+  const ms=MODELS.filter(m=>modelUnits(m)); if(!ms.length) return '<p class="small" style="margin:0">Todavía no elegiste prendas.</p>';
+  return ms.map(m=>{ const cols=Object.keys(cart[m.n]).filter(col=>lineUnits(m,col)); const u=modelUnits(m);
+    const lines=cols.map(col=>{ const l=cart[m.n][col], su=m.talles.filter(t=>l.sueltos[t]), parts=[];
+      if(l.curvas) parts.push(l.curvas+' curva'+(l.curvas>1?'s':''));
+      if(su.length) parts.push(su.map(t=>t+(l.sueltos[t]>1?' ×'+l.sueltos[t]:'')).join(', '));
+      return `<span class="cl"><span class="dot" style="background:${SW[col]}"></span><span><b>${esc(colorLbl(m,col))}:</b> ${parts.join(' + ')}</span></span>`; }).join('');
+    return `<div class="cmod"><div class="mhead">${thumb(m,cols[0],true)}<div class="t"><b>${m.n} ${esc(m.name)}</b>${lines}<small>${u} prenda${u===1?'':'s'}</small></div><span class="m">${fmt(modelTotal(m))}</span></div>
+      <div class="cbtns"><button type="button" class="cbtn" data-editm="${m.n}" aria-label="Cambiar ${m.n} ${esc(m.name)}">Cambiar</button><button type="button" class="cbtn quitar" data-quitar="${m.n}" aria-label="Quitar ${m.n} ${esc(m.name)} del pedido">Quitar</button></div></div>`; }).join('');
+}
 function summaryHTML(editable){
+  if(editable) return compactHTML();
   const gs=byCat(); if(!gs.length) return '<p class="small" style="margin:0">Todavía no elegiste prendas.</p>';
   return `<div class="catbar">${gs.map(g=>{const s=g.ms.reduce((a,m)=>a+modelTotal(m),0); return `<i style="flex:${s}" title="${esc(g.cat)}"></i>`}).join('')}</div>`
    + gs.map(g=>{ const u=g.ms.reduce((a,m)=>a+modelUnits(m),0), s=g.ms.reduce((a,m)=>a+modelTotal(m),0);
@@ -1304,7 +1326,12 @@ $('chkBack').addEventListener('click',()=>{ if(chkPaso>1){ chkPaso--; renderChec
 function seguirPaso(){ pushNav(); chkPaso++; renderCheck(true); renderBar();
   if(chkPaso===3 && me && !me.envios.length) openEnv('new');
   if(chkPaso===4 && me && !me.facturas.length) openFac('new'); }
-$('sumBox').addEventListener('click',e=>{ const b=e.target.closest('[data-editm]'); if(b) openModel(b.dataset.editm); });
+$('sumBox').addEventListener('click',e=>{ const b=e.target.closest('[data-editm]'); if(b) return openModel(b.dataset.editm);
+  const q=e.target.closest('[data-quitar]'); if(!q) return;
+  if(!q.dataset.ok){ q.dataset.ok='1'; q.textContent='¿Seguro? Tocá de nuevo'; setTimeout(()=>{ delete q.dataset.ok; if(q.isConnected) q.textContent='Quitar'; },4000); return; }
+  const n=q.dataset.quitar, m=MODELS.find(x=>x.n===n); delete cart[n]; saveCart(); renderBar();
+  if(!MODELS.some(x=>modelUnits(x))){ chkPaso=1; go('vCat'); window.scrollTo(0,0); toast('Listo. Tu pedido quedó vacío.'); return; }
+  renderCheck(); toast('Listo, sacamos '+n+(m?' '+m.name:'')+' de tu pedido.'); });
 $('clientBox').addEventListener('click',async e=>{
   const b=e.target.closest('button'); if(!b) return;
   if(b.id==='btnFind'||b.id==='btnCtrl'){ qGuard=$('qFind').value; const c=$('qCtrl')?$('qCtrl').value:'';
