@@ -791,6 +791,13 @@ html body .cmod small{color:#4A4A4A;font-size:13px}
 html body .cbtns{display:flex;gap:8px;margin-top:10px}
 html body button.cbtn{flex:1;min-height:44px;border-radius:12px;background:#fff;border:2px solid #000;color:#000;font-family:var(--titles);text-transform:uppercase;letter-spacing:.06em;font-weight:600;font-size:15px}
 html body button.cbtn.quitar{border-color:#CFCFCF;color:#4A4A4A}
+html body .rline{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #EDEDED}
+html body .rline:first-child{border-top:0;padding-top:0}
+html body .rline .rn{display:flex;flex-direction:column;font-size:15px;font-weight:600}
+html body .rline .rn small{font-weight:400;color:#4A4A4A;font-size:13px}
+html body button.cbtn.modped{display:block;width:100%;flex:none;margin:12px 0 0;min-height:48px;font-size:16px}
+html body button.cbtn.volres{display:block;width:auto;flex:none;padding:0 16px;margin:0 0 12px}
+html body button.cbtn.quitar[data-ok]{font-size:13px;letter-spacing:.02em;line-height:1.2;padding:4px 6px}
 </style>
 </head>
 <body>
@@ -832,20 +839,29 @@ html body button.cbtn.quitar{border-color:#CFCFCF;color:#4A4A4A}
   <footer class="prd-pie"><div class="pl">PRD</div>
       <div class="lc">PRD NAZCA 345</div><p>Av. Nazca 345, Local 1 · Galería Lemans</p>
       <div class="lc">PRD NAZCA 322</div><p>Av. Nazca 322, Local 1 · Galería El Malecón</p>
-      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2p · web</p></footer>
+      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2q · web</p></footer>
   </section>
 
   <section id="vCheck" class="view" hidden>
     <button class="back" id="chkBack" type="button">‹ Seguir eligiendo</button>
     <div class="pasos" id="chkPasos"></div>
     <div data-paso="1">
+      <div id="chkRes">
       <h2>Tu pedido</h2>
       <p class="sub">Revisalo. Después te pedimos tus datos. La sucursal revisa lo que hay y te pasamos el presupuesto antes de pagar.</p>
       <div class="box" id="totBox"></div>
       <div class="secth"><h3>Lo que elegiste</h3></div>
-      <div class="box" id="sumBox"></div>
+      <div class="box" id="resBox"></div>
+      <button class="cbtn modped" type="button" id="chkDetOpen">Modificar pedido</button>
       <button class="add seguir2" type="button" id="chkMas">+ Seguir eligiendo prendas</button>
+      </div>
+      <div id="chkDet" hidden>
+      <button class="cbtn volres" type="button" id="chkDetBack">‹ Volver al resumen</button>
+      <h2>Modificar tu pedido</h2>
+      <p class="sub">Tocá <b>Modificar</b> para cambiar colores o talles, o <b>Eliminar</b> para sacar la prenda.</p>
+      <div class="box" id="sumBox"></div>
       <button class="vaciar" type="button" id="chkVaciar">Vaciar mi pedido</button>
+      </div>
     </div>
     <div data-paso="2" hidden>
       <h2>Tus datos</h2><span id="whoTag" hidden></span>
@@ -938,7 +954,7 @@ function volverAtras(){
   if(!$('visor').hidden) return cerrarVisor();
   if(!$('scrim').hidden){ if(mode==='env'&&envPaso>1){ readDraft(); envPaso--; $('sheet').innerHTML=envForm(); return; } return closeSheet(); }
   const v=current();
-  if(v==='vCheck'){ if(chkPaso>1){ chkPaso--; return renderCheck(true); } return go('vCat'); }
+  if(v==='vCheck'){ if(chkPaso===1&&chkDetAb){ chkDetAb=false; return renderCheck(true); } if(chkPaso>1){ chkPaso--; return renderCheck(true); } return go('vCat'); }
   if(v==='vPed'){ store.set('prd_ult',null); setQuery({}); return go(suc?'vCat':'vSuc'); }
   if(v==='vMis') return go(suc?'vCat':'vSuc');
   if(v==='vSuc'&&suc) return go('vCat');
@@ -1282,7 +1298,7 @@ function compactHTML(){
       if(su.length) parts.push(su.map(t=>t+(l.sueltos[t]>1?' ×'+l.sueltos[t]:'')).join(', '));
       return `<span class="cl"><span class="dot" style="background:${SW[col]}"></span><span><b>${esc(colorLbl(m,col))}:</b> ${parts.join(' + ')}</span></span>`; }).join('');
     return `<div class="cmod"><div class="mhead">${thumb(m,cols[0],true)}<div class="t"><b>${m.n} ${esc(m.name)}</b>${lines}<small>${u} prenda${u===1?'':'s'}</small></div><span class="m">${fmt(modelTotal(m))}</span></div>
-      <div class="cbtns"><button type="button" class="cbtn" data-editm="${m.n}" aria-label="Cambiar ${m.n} ${esc(m.name)}">Cambiar</button><button type="button" class="cbtn quitar" data-quitar="${m.n}" aria-label="Quitar ${m.n} ${esc(m.name)} del pedido">Quitar</button></div></div>`; }).join('');
+      <div class="cbtns"><button type="button" class="cbtn" data-editm="${m.n}" aria-label="Modificar ${m.n} ${esc(m.name)}">Modificar</button><button type="button" class="cbtn quitar" data-quitar="${m.n}" aria-label="Eliminar ${m.n} ${esc(m.name)} del pedido">Eliminar</button></div></div>`; }).join('');
 }
 function summaryHTML(editable){
   if(editable) return compactHTML();
@@ -1298,7 +1314,7 @@ function summaryHTML(editable){
           + (su.length?`<div class="cvline"><b>${l.curvas?'Además, sueltas':'Sueltas'}</b><div class="tchips">${su.map(t=>`<span class="tchip suel">${t} <b>×${l.sueltos[t]}</b></span>`).join('')}</div></div>`:'') + '</div>'; }).join('')}
        ${editable?`<button class="editm" type="button" data-editm="${m.n}">Cambiar cantidades de ${m.n} ${esc(m.name)}</button>`:''}</div>`).join('')}</div>`; }).join('');
 }
-let chkPaso=1;
+let chkPaso=1, chkDetAb=false;
 const PASO_TIT=['','Tu pedido','Tus datos','Envío','Ticket','Confirmar'];
 function saveChk(){ store.set('prd_chk',{paso:chkPaso,decl,remito,obs:$('cObs').value,envSel,facSel}); }
 function renderCheck(arriba){ setTimeout(()=>{ try{ renderDecl(); }catch(e){} },0);
@@ -1309,7 +1325,10 @@ function renderCheck(arriba){ setTimeout(()=>{ try{ renderDecl(); }catch(e){} },
   if(arriba) window.scrollTo(0,0);
   saveChk();
   const ms=MODELS.filter(m=>modelUnits(m));
+  if(chkPaso!==1) chkDetAb=false;
+  $('chkRes').hidden=chkDetAb; $('chkDet').hidden=!chkDetAb;
   $('sumBox').innerHTML = summaryHTML(true);
+  $('resBox').innerHTML = ms.length ? ms.map(m=>{ const u=modelUnits(m); return `<div class="rline"><span class="rn">${m.n} ${esc(m.name)}<small>${u} prenda${u===1?'':'s'}</small></span><b>${fmt(modelTotal(m))}</b></div>`; }).join('') : '<p class="small" style="margin:0">Todavía no elegiste prendas.</p>';
   const {u,t}=totals(); const MINx=minFor(); const ok=t>=MINx;
   $('totBox').innerHTML=`<div class="totals"><div><span>Prendas</span><span>${u}</span></div><div><span>Modelos</span><span>${ms.length}</span></div><div class="big"><span>Total</span><span>${fmt(t)}</span></div></div>
     ${ok?`<div class="okline">✓ Mínimo de ${fmt(MINx)} cumplido${MINx<MIN?' (clienta habitual)':''}</div>`:`<div class="warnline">Te faltan ${fmt(MINx-t)} para llegar al mínimo de ${fmt(MINx)}. Tocá “Seguir eligiendo” y sumá más prendas.</div>`}
@@ -1320,17 +1339,19 @@ $('chkMas').addEventListener('click',()=>go('vCat'));
 $('chkVaciar').addEventListener('click',e=>{ const b=e.currentTarget;
   if(addTo){ const c=document.getElementById('addCancel'); if(c) c.click(); return; }
   if(!b.dataset.ok){ b.dataset.ok='1'; b.textContent='Tocá de nuevo para vaciar'; setTimeout(()=>{ delete b.dataset.ok; if(b.isConnected) b.textContent='Vaciar mi pedido'; },4000); return; }
-  delete b.dataset.ok; b.textContent='Vaciar mi pedido'; cart={}; saveCart(); chkPaso=1; go('vCat'); window.scrollTo(0,0); toast('Listo. Tu pedido quedó vacío.'); });
+  delete b.dataset.ok; b.textContent='Vaciar mi pedido'; cart={}; saveCart(); chkPaso=1; chkDetAb=false; go('vCat'); window.scrollTo(0,0); toast('Listo. Tu pedido quedó vacío.'); });
 $('chkNext').addEventListener('click',()=>$('barBtn').click());
-$('chkBack').addEventListener('click',()=>{ if(chkPaso>1){ chkPaso--; renderCheck(true); renderBar(); } else go('vCat'); });
+$('chkDetOpen').addEventListener('click',()=>{ chkDetAb=true; pushNav(); renderCheck(true); });
+$('chkDetBack').addEventListener('click',()=>{ chkDetAb=false; renderCheck(true); });
+$('chkBack').addEventListener('click',()=>{ if(chkPaso===1&&chkDetAb){ chkDetAb=false; return renderCheck(true); } if(chkPaso>1){ chkPaso--; renderCheck(true); renderBar(); } else go('vCat'); });
 function seguirPaso(){ pushNav(); chkPaso++; renderCheck(true); renderBar();
   if(chkPaso===3 && me && !me.envios.length) openEnv('new');
   if(chkPaso===4 && me && !me.facturas.length) openFac('new'); }
 $('sumBox').addEventListener('click',e=>{ const b=e.target.closest('[data-editm]'); if(b) return openModel(b.dataset.editm);
   const q=e.target.closest('[data-quitar]'); if(!q) return;
-  if(!q.dataset.ok){ q.dataset.ok='1'; q.textContent='¿Seguro? Tocá de nuevo'; setTimeout(()=>{ delete q.dataset.ok; if(q.isConnected) q.textContent='Quitar'; },4000); return; }
+  if(!q.dataset.ok){ q.dataset.ok='1'; q.textContent='¿Eliminar esta prenda? Tocá de nuevo'; setTimeout(()=>{ delete q.dataset.ok; if(q.isConnected) q.textContent='Eliminar'; },4000); return; }
   const n=q.dataset.quitar, m=MODELS.find(x=>x.n===n); delete cart[n]; saveCart(); renderBar();
-  if(!MODELS.some(x=>modelUnits(x))){ chkPaso=1; go('vCat'); window.scrollTo(0,0); toast('Listo. Tu pedido quedó vacío.'); return; }
+  if(!MODELS.some(x=>modelUnits(x))){ chkPaso=1; chkDetAb=false; go('vCat'); window.scrollTo(0,0); toast('Listo. Tu pedido quedó vacío.'); return; }
   renderCheck(); toast('Listo, sacamos '+n+(m?' '+m.name:'')+' de tu pedido.'); });
 $('clientBox').addEventListener('click',async e=>{
   const b=e.target.closest('button'); if(!b) return;
