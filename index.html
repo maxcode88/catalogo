@@ -839,7 +839,7 @@ html body button.cbtn.quitar[data-ok]{font-size:13px;letter-spacing:.02em;line-h
   <footer class="prd-pie"><div class="pl">PRD</div>
       <div class="lc">PRD NAZCA 345</div><p>Av. Nazca 345, Local 1 · Galería Lemans</p>
       <div class="lc">PRD NAZCA 322</div><p>Av. Nazca 322, Local 1 · Galería El Malecón</p>
-      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2q · web</p></footer>
+      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2r · web</p></footer>
   </section>
 
   <section id="vCheck" class="view" hidden>
@@ -848,18 +848,17 @@ html body button.cbtn.quitar[data-ok]{font-size:13px;letter-spacing:.02em;line-h
     <div data-paso="1">
       <div id="chkRes">
       <h2>Tu pedido</h2>
-      <p class="sub">Revisalo. Después te pedimos tus datos. La sucursal revisa lo que hay y te pasamos el presupuesto antes de pagar.</p>
+      <p class="sub">Revisá el total. Si querés cambiar algo, tocá <b>Modificar pedido</b>.</p>
       <div class="box" id="totBox"></div>
-      <div class="secth"><h3>Lo que elegiste</h3></div>
-      <div class="box" id="resBox"></div>
       <button class="cbtn modped" type="button" id="chkDetOpen">Modificar pedido</button>
-      <button class="add seguir2" type="button" id="chkMas">+ Seguir eligiendo prendas</button>
+      <div id="resBox" hidden></div>
       </div>
       <div id="chkDet" hidden>
       <button class="cbtn volres" type="button" id="chkDetBack">‹ Volver al resumen</button>
       <h2>Modificar tu pedido</h2>
       <p class="sub">Tocá <b>Modificar</b> para cambiar colores o talles, o <b>Eliminar</b> para sacar la prenda.</p>
       <div class="box" id="sumBox"></div>
+      <button class="add seguir2" type="button" id="chkMas">+ Agregar más prendas</button>
       <button class="vaciar" type="button" id="chkVaciar">Vaciar mi pedido</button>
       </div>
     </div>
@@ -1335,7 +1334,7 @@ function renderCheck(arriba){ setTimeout(()=>{ try{ renderDecl(); }catch(e){} },
     <p class="small" style="margin:8px 0 0">Lo arma <b>${esc(SUCS[suc].nombre)}</b> <small>· ${esc(SUCS[suc].sub||'')}</small></p>`;
   renderClient();
 }
-$('chkMas').addEventListener('click',()=>go('vCat'));
+$('chkMas').addEventListener('click',()=>{ chkDetAb=false; go('vCat'); });
 $('chkVaciar').addEventListener('click',e=>{ const b=e.currentTarget;
   if(addTo){ const c=document.getElementById('addCancel'); if(c) c.click(); return; }
   if(!b.dataset.ok){ b.dataset.ok='1'; b.textContent='Tocá de nuevo para vaciar'; setTimeout(()=>{ delete b.dataset.ok; if(b.isConnected) b.textContent='Vaciar mi pedido'; },4000); return; }
