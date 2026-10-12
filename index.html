@@ -778,6 +778,8 @@ header.top .who b{display:inline;margin-left:4px;color:#000}
 #vCat .conds{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-block:8px 10px}
 #vCat .cond{white-space:nowrap;font-size:12px;padding:5px 9px}
 html body .info h3.icamb{font-size:16px;font-weight:700;margin:18px 0 6px;color:#111}
+html body #chips{position:sticky;top:0;z-index:6;background:#fff;margin:0 -16px 12px;padding:10px 16px;box-shadow:0 1px 0 #CFCFCF}
+html body button.vaciar{display:block;margin:14px auto 0;background:none;border:0;color:#4A4A4A;text-decoration:underline;font-family:var(--body);font-size:15px;min-height:44px;padding:10px 16px}
 </style>
 </head>
 <body>
@@ -819,7 +821,7 @@ html body .info h3.icamb{font-size:16px;font-weight:700;margin:18px 0 6px;color:
   <footer class="prd-pie"><div class="pl">PRD</div>
       <div class="lc">PRD NAZCA 345</div><p>Av. Nazca 345, Local 1 · Galería Lemans</p>
       <div class="lc">PRD NAZCA 322</div><p>Av. Nazca 322, Local 1 · Galería El Malecón</p>
-      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2n · web</p></footer>
+      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2o · web</p></footer>
   </section>
 
   <section id="vCheck" class="view" hidden>
@@ -832,6 +834,7 @@ html body .info h3.icamb{font-size:16px;font-weight:700;margin:18px 0 6px;color:
       <div class="secth"><h3>Lo que elegiste</h3></div>
       <div class="box" id="sumBox"></div>
       <button class="add seguir2" type="button" id="chkMas">+ Seguir eligiendo prendas</button>
+      <button class="vaciar" type="button" id="chkVaciar">Vaciar mi pedido</button>
     </div>
     <div data-paso="2" hidden>
       <h2>Tus datos</h2><span id="whoTag" hidden></span>
@@ -1040,7 +1043,7 @@ document.addEventListener('click',e=>{ const d=e.target.closest('[data-info]'); 
   if(e.target.closest('#hMis')){ go('vMis'); renderMis(); return; }
   if(e.target.closest('#hPed')){ if(totals().u) $('barBtn').click(); else aviso('Todavía no elegiste prendas. Tocá una prenda y sumá talles con el +.'); return; } });
 function restaurarTiras(){ document.querySelectorAll('#grid [data-gal]').forEach(g=>{ const i=galIdx[g.dataset.gal]||0, s=g.querySelector('.strip'); if(s&&i) s.scrollLeft=i*s.clientWidth; }); }
-$('chips').addEventListener('click',e=>{ const b=e.target.closest('[data-cat]'); if(!b) return; cat=b.dataset.cat; renderChips(); renderGrid(); });
+$('chips').addEventListener('click',e=>{ const b=e.target.closest('[data-cat]'); if(!b) return; cat=b.dataset.cat; renderChips(); renderGrid(); const t=$('catTop'); if(t&&t.getBoundingClientRect().top<0) t.scrollIntoView(); });
 $('grid').addEventListener('click',e=>{
   const nav=e.target.closest('[data-ph]');
   if(nav){ e.preventDefault(); e.stopPropagation(); const g=nav.closest('[data-gal]'), m=M(g.dataset.gal), s=g.querySelector('.strip'); const i=((galIdx[m.n]||0)+ +nav.dataset.ph+m.fotos)%m.fotos; pedirFoto(m.n,i); s.scrollTo({left:i*s.clientWidth,behavior:'smooth'}); return; }
@@ -1292,6 +1295,10 @@ function renderCheck(arriba){ setTimeout(()=>{ try{ renderDecl(); }catch(e){} },
   renderClient();
 }
 $('chkMas').addEventListener('click',()=>go('vCat'));
+$('chkVaciar').addEventListener('click',e=>{ const b=e.currentTarget;
+  if(addTo){ const c=document.getElementById('addCancel'); if(c) c.click(); return; }
+  if(!b.dataset.ok){ b.dataset.ok='1'; b.textContent='Tocá de nuevo para vaciar'; setTimeout(()=>{ delete b.dataset.ok; if(b.isConnected) b.textContent='Vaciar mi pedido'; },4000); return; }
+  delete b.dataset.ok; b.textContent='Vaciar mi pedido'; cart={}; saveCart(); chkPaso=1; go('vCat'); window.scrollTo(0,0); toast('Listo. Tu pedido quedó vacío.'); });
 $('chkNext').addEventListener('click',()=>$('barBtn').click());
 $('chkBack').addEventListener('click',()=>{ if(chkPaso>1){ chkPaso--; renderCheck(true); renderBar(); } else go('vCat'); });
 function seguirPaso(){ pushNav(); chkPaso++; renderCheck(true); renderBar();
@@ -1454,7 +1461,8 @@ function renderPed(){
   else if(p.estado==='COMPRADO'){ const txt=`Hola PRD MODA! Soy ${p.nombre}. Confirmé la compra del pedido ${p.pedido} en ${p.sucNombre} por ${fmt(p.total)}. ¿Me pasan el alias para transferir?`;
     body=`<div class="estbox"><span class="estado ok">Compra confirmada</span><p>Pedinos el alias por WhatsApp (el mensaje ya está escrito). También te lo dejamos acá apenas lo tengamos.</p>
       <div class="totals"><div class="big"><span>Total a pagar</span><span>${fmt(p.total)}</span></div></div>
-      <a class="btn wabtn wide" href="${waLink(txt)}" target="_blank" rel="noopener">Pedir el alias por WhatsApp</a></div>${lista(false)}`; }
+      <a class="btn wabtn wide" href="${waLink(txt)}" target="_blank" rel="noopener">Pedir el alias por WhatsApp</a>
+      <button class="edit" type="button" id="pCancel" style="margin-top:6px">Cancelar el pedido</button></div>${lista(false)}`; }
   else if(p.estado==='ALIAS'||p.estado==='COMPROBANTE'){
     body=`<div class="estbox"><span class="estado ${p.estado==='COMPROBANTE'?'warn':'ok'}">${p.estado==='COMPROBANTE'?'Revisando tu pago':'Listo para pagar'}</span>
       <p>Transferí <b>${fmt(p.total)}</b> a este alias:</p><div class="alias" id="aliasTxt">${esc(p.alias)}</div><button class="btn ghost wide" type="button" id="pCopiar">Copiar alias</button>
