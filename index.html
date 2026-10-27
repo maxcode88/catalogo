@@ -855,7 +855,7 @@ html body .sz2 .step .sn{min-width:20px;font-size:18px!important}
   <footer class="prd-pie"><div class="pl">PRD</div>
       <div class="lc">PRD NAZCA 345</div><p>Av. Nazca 345, Local 1 · Galería Lemans</p>
       <div class="lc">PRD NAZCA 322</div><p>Av. Nazca 322, Local 1 · Galería El Malecón</p>
-      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2t · web</p></footer>
+      <p class="hr">Lunes a sábados de 8 a 17 h · Feriados de 8 a 15 h</p><p style="margin-top:14px;font-size:12px;color:#A8A8A8">Versión 2u · web</p></footer>
   </section>
 
   <section id="vCheck" class="view" hidden>
@@ -895,7 +895,7 @@ html body .sz2 .step .sn{min-width:20px;font-size:18px!important}
     </div>
     <div data-paso="5" hidden>
       <h2>Último paso</h2>
-      <div class="secth"><h3>Monto a declarar en el envío</h3><span>obligatorio</span></div>
+      <div id="declPaso5" hidden><div class="secth"><h3>Monto a declarar en el envío</h3><span>obligatorio</span></div>
       <div class="box">
         <p class="hint" style="margin:0 0 8px">Es el valor que figura en el envío (lo pide el correo o el transporte para el seguro).</p>
         <div class="declseg" id="declSeg" role="group" aria-label="Monto a declarar">
@@ -904,7 +904,7 @@ html body .sz2 .step .sn{min-width:20px;font-size:18px!important}
         </div>
         <div id="declOtro" hidden style="margin-top:12px"><label for="cDecl" class="lbl" style="display:block;margin-bottom:6px">¿Cuánto querés declarar?</label><input id="cDecl" inputmode="numeric" placeholder="$ escribí el monto" aria-label="Monto a declarar"></div>
         <div class="err" id="cDeclErr" style="margin-top:6px"></div>
-      </div>
+      </div></div>
       <div class="secth"><h3>¿Lleva remito?</h3></div>
       <div class="seg" id="remSeg"><button type="button" aria-pressed="true" data-rem="SI">Sí</button><button type="button" aria-pressed="false" data-rem="NO">No</button></div>
       <div class="secth"><h3>Comentario</h3><span>opcional</span></div>
@@ -1076,8 +1076,8 @@ function renderHero(){ const h=$('hero'); if(!h) return; const m=MODELS.find(x=>
   if(m) pedirFoto(m.n,0); }
 function infoSheet(k){ const T={como:'Cómo comprar',minimo:'Mínimo de compra',envios:'Envíos',horarios:'Sucursales y horarios'}; let c='';
   if(k==='como') c=`<ol class="ilist"><li><b>Elegí las prendas.</b> Tocá cada prenda, el color y los talles (o la curva).</li><li><b>Mandá el pedido.</b> Completás tus datos y el envío.</li><li><b>Te mandamos el presupuesto</b> por WhatsApp con lo que hay.</li><li><b>Confirmás y pagás</b> por transferencia. Lo armamos y te lo enviamos.</li></ol><h3 class="icamb">Cambios</h3><p>En compras mayoristas <b>no hacemos cambios</b> de talle ni de color.</p><p>Solo cambiamos prendas con <b>falla de fábrica</b>: escribinos por WhatsApp con una foto de la falla.</p>`;
-  if(k==='minimo') c=`<div class="ibig">${fmt(MIN)}</div><p>Es el mínimo de compra. Si ya sos clienta habitual, el mínimo es <b>${fmt(MIN_HAB)}</b>.</p><p><b>Curva</b> = 1 prenda de cada talle. También podés sumar talles sueltos.</p>`;
-  if(k==='envios') c=`<p><b>Enviamos a todo el país</b> por el transporte que elijas (Vía Cargo, Cruz del Sur u otro), por Correo Argentino o Andreani.</p><p><b>El envío lo pagás vos directamente al transporte.</b></p><p>Llevar tu pedido hasta el transporte corre por nuestra cuenta: <b>no te cobramos nada</b> por eso.</p><p>También podés <b>retirarlo en la sucursal</b>.</p><p>Al hacer el pedido te pedimos el <b>monto a declarar</b> para el seguro del envío.</p>`;
+  if(k==='minimo') c=`<div class="ibig">${fmt(MIN)}</div><p>Es el mínimo de compra${MIN_HAB<MIN?`. Si ya sos clienta habitual, el mínimo es <b>${fmt(MIN_HAB)}</b>`:', también cuando confirmás la compra'}.</p><p><b>Curva</b> = 1 prenda de cada talle. También podés sumar talles sueltos.</p>`;
+  if(k==='envios') c=`<p><b>Enviamos a todo el país</b> por el transporte que elijas (Vía Cargo, Cruz del Sur u otro), por Correo Argentino o Andreani.</p><p><b>El envío lo pagás vos directamente al transporte.</b></p><p>Llevar tu pedido hasta el transporte corre por nuestra cuenta: <b>no te cobramos nada</b> por eso.</p><p>También podés <b>retirarlo en la sucursal</b>.</p><p>Cuando confirmás la compra te pedimos el <b>monto a declarar</b> para el seguro del envío.</p>`;
   if(k==='horarios') c=Object.keys(SUCS).filter(x=>SUCS[x].dir).map(x=>`<div class="isuc"><b>${esc(SUCS[x].nombre)}</b><span>${esc(SUCS[x].dir)}</span><small>${esc(SUCS[x].sub||'')}</small></div>`).join('')+`<p style="margin-top:14px"><b>Lunes a sábados</b> de 8 a 17 h<br><b>Feriados</b> de 8 a 15 h</p>`;
   mode='info'; pushNav(); $('sheet').innerHTML=`<div class="stop"><button type="button" class="sback" data-close>‹ Volver</button><span class="sttl">${T[k]}</span></div><div class="info">${c}</div><div class="sfoot"><span></span><button class="btn" type="button" data-close>Entendido</button></div>`; $('scrim').hidden=false; $('sheet').scrollTop=0; }
 document.addEventListener('click',e=>{ const d=e.target.closest('[data-info]'); if(d) return infoSheet(d.dataset.info);
@@ -1438,14 +1438,14 @@ function renderBar(){
   $('barT').textContent=fmt(t);
   let s = u ? (ok?`${u} prendas · mínimo cumplido`:`${u} prendas · te faltan ${fmt(MINx-t)} para el mínimo`) : 'Elegí prendas para empezar';
   let falta = !!u && !ok, L='';
-  const ready = ok && me && envSel && facSel && decl>0;
+  const ready = ok && me && envSel && facSel;
   let puede = true;
   if(v==='vCheck'){
     if(chkPaso===1){ puede=ok; if(!ok){ s=`Te faltan ${fmt(MINx-t)} para el mínimo`; L=`Te faltan ${fmt(MINx-t)} para llegar al mínimo de ${fmt(MINx)}. Tocá ${chkDetAb?'“+ Agregar más prendas”':'“Seguir eligiendo”'} y sumá más prendas.`; } }
     else if(chkPaso===2){ puede=!!me; if(!me){ s='Faltan tus datos'; L='Falta: buscate con tu DNI o celular, o tocá “Es mi primera compra” para cargar tus datos.'; } }
     else if(chkPaso===3){ puede=!!envSel; s=envSel?'Envío elegido':'Falta elegir el envío'; if(!envSel) L=(me&&me.envios&&me.envios.length)?'Falta elegir cómo te lo mandamos. Tocá una de las opciones de arriba.':'Falta cargar cómo te lo mandamos. Tocá “+ Cargar cómo te lo mandamos”.'; }
     else if(chkPaso===4){ puede=!!facSel; s=facSel?'Ticket elegido':'Falta elegir el ticket'; if(!facSel) L=(me&&me.facturas&&me.facturas.length)?'Falta elegir a nombre de quién va el ticket. Tocá una de las opciones de arriba.':'Falta cargar a nombre de quién va el ticket. Tocá “+ Cargar a nombre de quién va el ticket”.'; }
-    else { puede=ready; L=ready?'':!ok?`Te faltan ${fmt(MINx-t)} para llegar al mínimo de ${fmt(MINx)}. Tocá “Atrás” hasta el paso 1, después “Seguir eligiendo”, y sumá más prendas.`:!me?'Faltan tus datos: tocá “Atrás” hasta el paso 2.':!envSel?'Falta elegir el envío: tocá “Atrás” hasta el paso 3.':!facSel?'Falta elegir el ticket: tocá “Atrás” hasta el paso 4.':'Falta el monto a declarar: tocá “El total del pedido” u “Otro monto”.'; s=ready?'Todo listo':!ok?`Te faltan ${fmt(MINx-t)} para el mínimo`:decl>0?'Falta completar un paso':'Falta el monto a declarar'; }
+    else { puede=ready; L=ready?'':!ok?`Te faltan ${fmt(MINx-t)} para llegar al mínimo de ${fmt(MINx)}. Tocá “Atrás” hasta el paso 1, después “Seguir eligiendo”, y sumá más prendas.`:!me?'Faltan tus datos: tocá “Atrás” hasta el paso 2.':!envSel?'Falta elegir el envío: tocá “Atrás” hasta el paso 3.':!facSel?'Falta elegir el ticket: tocá “Atrás” hasta el paso 4.':'Falta completar un paso.'; s=ready?'Todo listo':!ok?`Te faltan ${fmt(MINx-t)} para el mínimo`:'Falta completar un paso'; }
     falta = !puede;
   }
   $('barS').textContent=s; $('barS').classList.toggle('mal',falta);
@@ -1461,7 +1461,7 @@ $('barBtn').addEventListener('click',async ()=>{
   if(current()!=='vCheck') return go('vCheck');
   if(chkPaso<5) return seguirPaso();
   const b=$('barBtn'); b.disabled=true; b.textContent='Enviando…';
-  try{ const r=await srv.enviarPedido({doc:me.doc,control:ctrl,sucursal:suc,envio:envSel,factura:facSel,declarado:decl,remito,obs:$('cObs').value.trim(),carrito:cart});
+  try{ const r=await srv.enviarPedido({doc:me.doc,control:ctrl,sucursal:suc,envio:envSel,factura:facSel,declarado:0,remito,obs:$('cObs').value.trim(),carrito:cart});
     if(r.error){ aviso(r.error); renderBar(); return; }
     const mis=store.get('prd_mis',[]); mis.unshift({pedido:r.pedido,token:r.token}); store.set('prd_mis',mis.slice(0,20));
     store.set('prd_ult',{pedido:r.pedido,token:r.token,ts:Date.now()});
@@ -1474,13 +1474,15 @@ async function agregar(){ const b=$('barBtn'); b.disabled=true; b.textContent='A
   } catch(e){ falla(e); renderBar(); } }
 
 /* ===== seguimiento del pedido ===== */
-let ped=null, pedTk='', recien=false, verDet=false;
+let ped=null, pedTk='', recien=false, verDet=false, pDecl=0, pDeclMode='', pDeclPed='';
 const PASOS=['CHEQUEO','PRESUPUESTO','COMPRADO','ALIAS','COMPROBANTE','APROBADO','ENVIADO'];
 function abrirPedido(cod,tk,nuevo){ ped={pedido:cod}; pedTk=tk; recien=!!nuevo; verDet=false; setQuery({pedido:cod,t:tk}); go('vPed'); verPedido(); }
 async function verPedido(){ try{ const r=await srv.verPedido(ped.pedido,pedTk); if(r.error){ $('pedBox').innerHTML=`<p>${esc(r.error)}</p>`; return; } ped=r; renderPed(); } catch(e){ $('pedBox').innerHTML='<p>No pude cargar el pedido. Probá de nuevo.</p>'; } }
 function waLink(txt){ return `https:\/\/wa.me/${ped.whatsapp}?text=${encodeURIComponent(txt)}`; }
 const sucTxt=p=>{ const s=SUCS[p.sucursal]; return s?`<b>${esc(s.nombre)}</b> <small style="color:var(--muted)">(${esc(s.sub||'')})</small>`:`<b>${esc(p.sucNombre)}</b>`; };
+function declOk(){ return pDeclMode==='tot' || (pDeclMode==='otro' && pDecl>0); }
 function renderPed(){
+  if(pDeclPed!==ped.pedido){ pDeclPed=ped.pedido; pDecl=0; pDeclMode=''; }
   const p=ped, i=PASOS.indexOf(p.estado), canc=p.estado==='CANCELADO';
   const head=`<h2 style="margin-bottom:4px">Pedido ${esc(p.pedido)}</h2><p class="sub" style="margin:0">${esc(p.nombre)} · ${esc(SUCS[p.sucursal]?SUCS[p.sucursal].nombre:p.sucNombre)} · ${esc(p.fecha.slice(0,16))}</p>
     ${canc?'':`<div class="steps2">${PASOS.slice(0,6).map((x,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div>`}`;
@@ -1518,7 +1520,12 @@ function renderPed(){
     body=`<div class="estbox"><span class="estado ok">Presupuesto listo</span><p>${falt?`Hay <b>${falt}</b> prenda${falt>1?'s':''} que no está${falt>1?'n':''} completa${falt>1?'s':''}. Elegí qué hacemos con cada una:`:'¡Está todo! Revisalo y confirmá.'}</p>
       <div class="totals"><div><span>Prendas</span><span>${p.prendas}</span></div><div class="big"><span>Total a pagar</span><span>${fmt(p.total)}</span></div></div>
       ${p.vence?`<p class="small">Te lo guardamos hasta el ${esc(p.vence.slice(8,10)+'/'+p.vence.slice(5,7)+' '+p.vence.slice(11,16))} hs.</p>`:''}
-      <button class="btn wide" type="button" id="pComprar" ${p.total>0?'':'disabled'}>Comprar · ${fmt(p.total)}</button>
+      ${p.total<MIN?`<p class="err">Te faltan ${fmt(MIN-p.total)} para el mínimo de ${fmt(MIN)}. Tocá “Agregar o cambiar prendas” y sumá más prendas.</p>`:`<div class="secth" style="margin-top:14px"><h3>Monto a declarar en el envío</h3><span>obligatorio</span></div>
+      <p class="hint" style="margin:0 0 8px">Es el valor que figura en el envío (lo pide el correo o el transporte para el seguro).</p>
+      <div class="declseg" role="group" aria-label="Monto a declarar"><button type="button" data-pdecl="tot" aria-pressed="${pDeclMode==='tot'}"><b>El total de la compra</b><span>${fmt(p.total)}</span></button><button type="button" data-pdecl="otro" aria-pressed="${pDeclMode==='otro'}"><b>Otro monto</b><span>lo escribís vos</span></button></div>
+      <div ${pDeclMode==='otro'?'':'hidden'} style="margin-top:12px"><label for="pDeclIn" class="lbl" style="display:block;margin-bottom:6px">¿Cuánto querés declarar?</label><input id="pDeclIn" inputmode="numeric" placeholder="$ escribí el monto" aria-label="Monto a declarar" value="${pDeclMode==='otro'&&pDecl?fmt(pDecl):''}"></div>
+      <p class="err" id="pDeclErr" style="margin-top:8px">${declOk()?'':'Falta el monto a declarar: tocá “El total de la compra” u “Otro monto”.'}</p>`}
+      <button class="btn wide" type="button" id="pComprar" ${p.total>=MIN&&declOk()?'':'disabled'}>Comprar · ${fmt(p.total)}</button>
       <button class="add" type="button" id="pAgregar" style="width:100%;margin-top:8px">Agregar o cambiar prendas</button>
       <button class="edit" type="button" id="pCancel" style="margin-top:6px">Cancelar el pedido</button></div>${lista(true)}`; }
   else if(p.estado==='COMPRADO'){ const txt=`Hola PRD MODA! Soy ${p.nombre}. Confirmé la compra del pedido ${p.pedido} en ${p.sucNombre} por ${fmt(p.total)}. ¿Me pasan el alias para transferir?`;
@@ -1540,13 +1547,16 @@ $('pedBox').addEventListener('click',async e=>{
   const b=e.target.closest('button'); if(!b||b.disabled) return;
   if(b.dataset.dec||b.dataset.decg){ b.disabled=true; const d={}; if(b.dataset.dec) d[b.dataset.c]=b.dataset.dec; else b.dataset.cs.split(',').forEach(c=>d[c]=b.dataset.decg);
     try{ const r=await srv.decidir(ped.pedido,pedTk,d); if(r.error) aviso(r.error); else { ped=r; renderPed(); } } catch(err){ falla(err); } return; }
-  if(b.id==='pComprar'){ b.disabled=true; b.textContent='Confirmando…'; try{ const r=await srv.comprar(ped.pedido,pedTk); if(r.error){ aviso(r.error); verPedido(); return; } ped=r; renderPed();
+  if(b.dataset.pdecl){ pDeclMode=b.dataset.pdecl; if(pDeclMode==='tot') pDecl=ped.total; else pDecl=0; renderPed(); if(pDeclMode==='otro') setTimeout(()=>{ const i=$('pDeclIn'); if(i) i.focus(); },50); return; }
+  if(b.id==='pComprar'){ b.disabled=true; b.textContent='Confirmando…'; try{ const r=await srv.comprar(ped.pedido,pedTk,pDeclMode==='tot'?ped.total:pDecl); if(r.error){ aviso(r.error); verPedido(); return; } ped=r; renderPed();
       window.open(waLink(`Hola PRD MODA! Soy ${r.nombre}. Confirmé la compra del pedido ${r.pedido} en ${r.sucNombre} por ${fmt(r.total)}. ¿Me pasan el alias para transferir?`),'_blank'); } catch(err){ falla(err); verPedido(); } return; }
   if(b.id==='pAgregar'){ store.set('prd_cart_guardado',cart); cart={}; saveCart(); addTo={pedido:ped.pedido,token:pedTk}; suc=ped.sucursal; go('vCat'); toast('Elegí las prendas para sumar'); return; }
   if(b.id==='pCancel'){ if(!confirmar(b)) return; try{ const r=await srv.cancelarPorClienta(ped.pedido,pedTk); if(r.error) aviso(r.error); else { ped=r; renderPed(); } } catch(err){ falla(err); } return; }
   if(b.id==='pCopiar'){ try{ await navigator.clipboard.writeText(ped.alias); toast('Alias copiado'); } catch(err){ const r=document.createRange(); r.selectNodeContents($('aliasTxt')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('Alias seleccionado: copialo'); } return; }
 });
 function confirmar(b){ if(b.dataset.ok) return true; b.dataset.ok='1'; b.textContent='Tocá de nuevo para cancelar'; setTimeout(()=>{ delete b.dataset.ok; if(b.isConnected) b.textContent='Cancelar el pedido'; },6000); return false; }
+$('pedBox').addEventListener('input',e=>{ if(e.target.id!=='pDeclIn') return; pDecl=+digits(e.target.value)||0;
+  const b=$('pComprar'); if(b) b.disabled=!(ped.total>=MIN&&declOk()); const er=$('pDeclErr'); if(er) er.textContent=declOk()?'':'Falta el monto a declarar: escribí cuánto querés declarar.'; });
 $('pedBox').addEventListener('change',async e=>{ if(e.target.id!=='pFile') return; const f=e.target.files[0]; if(!f) return;
   toast('Subiendo…');
   try{ const {b64,mime}=await prepararArchivo(f); const r=await srv.subirComprobante(ped.pedido,pedTk,b64,mime,f.name);
